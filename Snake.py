@@ -137,7 +137,7 @@ def gameLoop():
     quit()
  
  
-#===============Snake initalize======================
+#===============Snake initalize========================
 class Snake_Init:
     def __init__(self, x, y):
         self.x = x
@@ -226,4 +226,3 @@ def Snake_path(snake, grid, path_array, food):
                     direction = 0
                 elif event.key == K_d and not direction == 3:
                     direction = 1'''
-                'xx'
