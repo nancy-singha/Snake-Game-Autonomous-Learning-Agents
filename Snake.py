@@ -139,7 +139,7 @@ def message(msg, color):
     pygame.quit()
     quit()
  '''
- 
+
 #===============Snake initalize========================
 class Snake_Init:
     def __init__(self, x, y):
@@ -192,7 +192,7 @@ def Snake_path(snake, grid, path_array, food, current):
     done = False
     #clock.tick(10)
     while not done:
-        clock.tick(4)
+        clock.tick(10)
         display.fill(black)
         direction = path_array.pop(-1)
         if direction == 0:    # down
@@ -206,12 +206,12 @@ def Snake_path(snake, grid, path_array, food, current):
         current = snake[-1]
 
         if current.x == food.x and current.y == food.y:
-            return snake[-1]     #Goal achived, next food requested
+            return snake     #Goal achived, next food requested
         else:
             snake.pop(0)
 
         for spot in snake:
-            spot.show(white)
+            Snake_Init.show(spot, white)
         '''for i in range(rows):
             for j in range(cols):
                 if grid[i][j].obstrucle:
@@ -223,7 +223,7 @@ def Snake_path(snake, grid, path_array, food, current):
         for event in pygame.event.get():
             if event.type == QUIT:
                 done = True
-                return NULL #terminate, game ended
+                return [] #terminate, game ended
             elif event.type == KEYDOWN:
                 if event.key == K_w and not direction == 0:
                     direction = 2
