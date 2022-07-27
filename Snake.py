@@ -1,10 +1,12 @@
+from asyncio.windows_events import NULL
 from turtle import distance
-import pygame
+import pygame 
 import time
 import random
 from random import randint
+from pygame import time, draw, QUIT, init, KEYDOWN, K_a, K_s, K_d, K_w
 
-import A_Star_path 
+#import A_Star_path 
  
 pygame.init()
 
@@ -31,13 +33,14 @@ display = pygame.display.set_mode((display_width, display_height))
 #pygame.display.set_caption('Snake Game by Edureka')
  
 clock = pygame.time.Clock()
+clock.tick(10)
 
 snake_block = 10
 snake_speed = 10
  
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
- 
+
  
 def Your_score(score):
     value = score_font.render("Your Score: " + str(score), True, blue)
@@ -55,7 +58,7 @@ def message(msg, color):
     display.blit(mesg, [display_width / 6, display_height / 3])
  
  
-def gameLoop():
+'''def gameLoop():
     game_over = False
     game_close = False
  
@@ -135,7 +138,7 @@ def gameLoop():
  
     pygame.quit()
     quit()
- 
+ '''
  
 #===============Snake initalize========================
 class Snake_Init:
@@ -150,14 +153,14 @@ class Snake_Init:
         self.obstrucle = False
         '''if randint(1, 101) < 3:
             self.obstrucle = True'''
-        print(self.x, self.y, self.f, self.g, self.h,'\n', self.neighbors, '\n', self.camefrom, '\n', self.obstrucle,'\n xxxxxxxxxxxxxxx')
+        #print(self.x, self.y, self.f, self.g, self.h,'\n', self.neighbors, '\n', self.camefrom, '\n', self.obstrucle,'\n xxxxxxxxxxxxxxx')
 
     def show(self, color):
         pygame.draw.rect(display, color, [self.x*hr+2, self.y*wr+2, hr-4, wr-4])
 
     #defining the immidiate neighbors for each position in the grid
-    def add_neighbors(self):
-        print('self_neighbors of:', self.x, self.y )
+    def add_neighbors(self, grid):
+        #print('self_neighbors of:', self.x, self.y )
         if self.x > 0:
             self.neighbors.append(grid[self.x - 1][self.y])
         if self.y > 0:
@@ -173,20 +176,23 @@ def Snake():
     #print(grid)
     for i in range(rows):
         for j in range(cols):
-            grid[i][j].add_neighbors()
+            grid[i][j].add_neighbors(grid)
 
-    snake_head = [grid[round(rows/2)][round(cols/2)]]
+    '''snake_head = [grid[round(rows/2)][round(cols/2)]]
     food = grid[randint(0, rows-1)][randint(0, cols-1)]
+    current = snake_head[-1]'''
     
-    return grid, snake_head, food
+    return grid
 
 
 #=============Sanke Movement along the path==============
 
-def Snake_path(snake, grid, path_array, food):
+def Snake_path(snake, grid, path_array, food, current):
     #snake following the path========================================================
+    done = False
+    #clock.tick(10)
     while not done:
-        clock.tick(12)
+        clock.tick(4)
         display.fill(black)
         direction = path_array.pop(-1)
         if direction == 0:    # down
@@ -200,7 +206,7 @@ def Snake_path(snake, grid, path_array, food):
         current = snake[-1]
 
         if current.x == food.x and current.y == food.y:
-            return True     #Goal achived, next food requested
+            return snake[-1]     #Goal achived, next food requested
         else:
             snake.pop(0)
 
@@ -213,10 +219,11 @@ def Snake_path(snake, grid, path_array, food):
 
         food.show(green)
         snake[-1].show(blue)
-        display.flip()  #display snake's movement
-        '''for event in pygame.event.get():
+        pygame.display.flip()  #display snake's movement
+        for event in pygame.event.get():
             if event.type == QUIT:
                 done = True
+                return NULL #terminate, game ended
             elif event.type == KEYDOWN:
                 if event.key == K_w and not direction == 0:
                     direction = 2
@@ -225,4 +232,4 @@ def Snake_path(snake, grid, path_array, food):
                 elif event.key == K_s and not direction == 2:
                     direction = 0
                 elif event.key == K_d and not direction == 3:
-                    direction = 1'''
+                    direction = 1
