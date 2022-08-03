@@ -1,7 +1,10 @@
+from importlib.resources import path
 from pandas import isnull
 import Snake as SnakeGame
 from random import randint
 from numpy import empty, sqrt
+
+global screen_counter
 
 def get_path(food, snake_head):
     #print('in get path- A* search')
@@ -54,7 +57,7 @@ def get_path(food, snake_head):
             snake_grid[i][j].g = 0
     return dir_array1
 
-def start_game():
+def start_game(screen_counter):
     score=0
     snake_head = [snake_grid[round(SnakeGame.rows/2)][round(SnakeGame.cols/2)]]
     food = snake_grid[randint(0, SnakeGame.rows-1)][randint(0, SnakeGame.cols-1)]
@@ -64,11 +67,13 @@ def start_game():
 
     food_array = [food]
     #print(path_array)
+    screen_counter= screen_counter+len(path_array)
+    new_snake_head= SnakeGame.Snake_path(snake_head, snake_grid, path_array, food, current, screen_counter)
 
-    new_snake_head= SnakeGame.Snake_path(snake_head, snake_grid, path_array, food, current)
     #while not achived
     while new_snake_head!=[]:
         score= score+1
+        
         current = new_snake_head[-1]
         while 1:
             food = snake_grid[randint(0, SnakeGame.rows - 1)][randint(0, SnakeGame.cols - 1)]
@@ -79,15 +84,19 @@ def start_game():
         if path_array==[]:
             break
         #print(path_array)
-        new_snake_head= SnakeGame.Snake_path(new_snake_head, snake_grid, path_array, food, current)
-    return score
+        screen_counter= screen_counter+len(path_array)
+        new_snake_head= SnakeGame.Snake_path(new_snake_head, snake_grid, path_array, food, current, screen_counter)
+    return score, screen_counter
 
+#Start
 snake_grid= SnakeGame.Snake()
 score=[]
+screen_counter=0
 for i in range(0,20):
-    score.append(start_game())
-    print('score:', score)
-
+    results=start_game(screen_counter)
+    score.append(results[0])
+    screen_counter=results[1]
+    print('score for game no',i, ': ', score)
 print('Highest Score: ', max(score))
 
 

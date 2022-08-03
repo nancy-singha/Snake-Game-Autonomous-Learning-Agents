@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from turtle import distance
+from pandas import concat
 import pygame 
 import time
 import random
@@ -29,8 +30,8 @@ display_height = 400
 wr = display_width/cols
 hr = display_height/rows
 
-display = pygame.display.set_mode((display_width, display_height))
-#pygame.display.set_caption('Snake Game by Edureka')
+dis = pygame.display.set_mode((display_width, display_height))
+#pygame.display.set_caption('Snake Game by Nancy Singha')
  
 clock = pygame.time.Clock()
 clock.tick(10)
@@ -44,101 +45,18 @@ score_font = pygame.font.SysFont("comicsansms", 35)
  
 def Your_score(score):
     value = score_font.render("Your Score: " + str(score), True, blue)
-    display.blit(value, [0, 0])
+    dis.blit(value, [0, 0])
  
  
  
 def our_snake(snake_block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(display, black, [x[0], x[1], snake_block, snake_block])
+        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
  
  
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
-    display.blit(mesg, [display_width / 6, display_height / 3])
- 
- 
-'''def gameLoop():
-    game_over = False
-    game_close = False
- 
-    x1 = display_width / 2
-    y1 = display_height / 2
- 
-    x1_change = 0
-    y1_change = 0
- 
-    snake_List = []
-    Length_of_snake = 1
- 
-    foodx = round(random.randrange(0, display_width - snake_block) / 10.0) * 10.0
-    foody = round(random.randrange(0, display_height - snake_block) / 10.0) * 10.0
- 
-    while not game_over:
- 
-        while game_close == True:
-            display.fill(white)
-            message("You Lost! Press C-Play Again or Q-Quit", red)
-            Your_score(Length_of_snake - 1)
-            pygame.display.update()
- 
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        game_over = True
-                        game_close = False
-                    if event.key == pygame.K_c:
-                        gameLoop()
- 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    x1_change = -snake_block
-                    y1_change = 0
-                elif event.key == pygame.K_RIGHT:
-                    x1_change = snake_block
-                    y1_change = 0
-                elif event.key == pygame.K_UP:
-                    y1_change = -snake_block
-                    x1_change = 0
-                elif event.key == pygame.K_DOWN:
-                    y1_change = snake_block
-                    x1_change = 0
- 
-        if x1 >= display_width or x1 < 0 or y1 >= display_height or y1 < 0:
-            game_close = True
-        x1 += x1_change
-        y1 += y1_change
-        display.fill(white)
-        pygame.draw.rect(display, green, [foodx, foody, snake_block, snake_block])
-        snake_Head = []
-        snake_Head.append(x1)
-        snake_Head.append(y1)
-        snake_List.append(snake_Head)
-        if len(snake_List) > Length_of_snake:
-            del snake_List[0]
- 
-        for x in snake_List[:-1]:
-            if x == snake_Head:
-                game_close = True
- 
-        our_snake(snake_block, snake_List)
-        Your_score(Length_of_snake - 1)
- 
-        pygame.display.update()
- 
-        if x1 == foodx and y1 == foody:
-            foodx = round(random.randrange(0, display_width - snake_block) / 10.0) * 10.0
-            foody = round(random.randrange(0, display_height - snake_block) / 10.0) * 10.0
-            Length_of_snake += 1
- 
-        clock.tick(snake_speed)
- 
-    pygame.quit()
-    quit()
- '''
+    dis.blit(mesg, [display_width / 6, display_height / 3])
 
 #===============Snake initalize========================
 class Snake_Init:
@@ -156,7 +74,7 @@ class Snake_Init:
         #print(self.x, self.y, self.f, self.g, self.h,'\n', self.neighbors, '\n', self.camefrom, '\n', self.obstrucle,'\n xxxxxxxxxxxxxxx')
 
     def show(self, color):
-        pygame.draw.rect(display, color, [self.x*hr+2, self.y*wr+2, hr-4, wr-4])
+        pygame.draw.rect(dis, color, [self.x*hr+2, self.y*wr+2, hr-4, wr-4])
 
     #defining the immidiate neighbors for each position in the grid
     def add_neighbors(self, grid):
@@ -180,20 +98,18 @@ def Snake():
 
     '''snake_head = [grid[round(rows/2)][round(cols/2)]]
     food = grid[randint(0, rows-1)][randint(0, cols-1)]
-    current = snake_head[-1]'''
-    
+    current = snake_head[-1]'''   
     return grid
-
 
 #=============Sanke Movement along the path==============
 
-def Snake_path(snake, grid, path_array, food, current):
+def Snake_path(snake, grid, path_array, food, current, screen_counter):
     #snake following the path========================================================
     done = False
     #clock.tick(10)
     while not done:
         clock.tick(10)
-        display.fill(black)
+        dis.fill(black)
         direction = path_array.pop(-1)
         if direction == 0:    # down
             snake.append(grid[current.x][current.y + 1])
@@ -220,6 +136,12 @@ def Snake_path(snake, grid, path_array, food, current):
         food.show(green)
         snake[-1].show(blue)
         pygame.display.flip()  #display snake's movement
+
+        #Storing screen frames
+        screen_name= 'Frames/screen_'+ str(screen_counter)+'.jpg'
+        pygame.image.save(pygame.display.get_surface(), screen_name)
+        screen_counter += 1
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 done = True
