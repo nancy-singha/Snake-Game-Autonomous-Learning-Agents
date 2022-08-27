@@ -6,6 +6,9 @@ import time
 import random
 from random import randint
 from pygame import time, draw, QUIT, init, KEYDOWN, K_a, K_s, K_d, K_w
+from enum import Enum
+
+from regex import B
 
 #import A_Star_path 
  
@@ -20,43 +23,42 @@ green = (0, 255, 0)
 blue = (50, 153, 213)
 
 #grid size of the game
-cols = 20
-rows = 20
+'''cols = 20
+rows = 20'''
+
+BLOCK_SIZE=20 #rows=cols=BLOCK_SIZE
 
 #Dimentions of the window
 display_width = 400
 display_height = 400
 
-wr = display_width/cols
-hr = display_height/rows
+wr = display_width/BLOCK_SIZE
+hr = display_height/BLOCK_SIZE
 
 dis = pygame.display.set_mode((display_width, display_height))
 #pygame.display.set_caption('Snake Game by Nancy Singha')
  
 clock = pygame.time.Clock()
-clock.tick(10)
 
-snake_block = 10
-snake_speed = 10
- 
 font_style = pygame.font.SysFont("bahnschrift", 25)
-score_font = pygame.font.SysFont("comicsansms", 35)
+score_font = pygame.font.SysFont("comicsansms", 20)
 
+#=====================================================
+class Direction(Enum):
+    DOWN = 0
+    RIGHT = 1
+    UP = 2
+    LEFT = 3
  
 def Your_score(score):
-    value = score_font.render("Your Score: " + str(score), True, blue)
+    value = score_font.render("Score: " + str(score), True, red)
     dis.blit(value, [0, 0])
  
- 
- 
-def our_snake(snake_block, snake_list):
-    for x in snake_list:
-        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
- 
- 
+'''
+
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
-    dis.blit(mesg, [display_width / 6, display_height / 3])
+    dis.blit(mesg, [display_width / 6, display_height / 3])'''
 
 #===============Snake initalize========================
 class Snake_Init:
@@ -83,41 +85,62 @@ class Snake_Init:
             self.neighbors.append(grid[self.x - 1][self.y])
         if self.y > 0:
             self.neighbors.append(grid[self.x][self.y - 1])
-        if self.x < rows - 1:
+        if self.x < BLOCK_SIZE - 1:
             self.neighbors.append(grid[self.x + 1][self.y])
-        if self.y < cols - 1:
+        if self.y < BLOCK_SIZE - 1:
            self.neighbors.append(grid[self.x][self.y + 1])
+
+    def is_collision(self,pt=None):
+        if(pt is None):
+            pt = self.head
+        #hit boundary
+        if(pt.x>display_width-BLOCK_SIZE or pt.x<0 or pt.y>display_height - BLOCK_SIZE or pt.y<0):
+            return True
+        if(pt in self.snake[1:]):
+            return True
+        return False
+
+def generate_snake_food(snake_grid, head):
+    food = snake_grid[randint(0, BLOCK_SIZE - 1)][randint(0, BLOCK_SIZE - 1)]
+    if ( food in head):   #food.obstrucle
+        generate_snake_food(snake_grid, head)
+    return food
 
 #==============START================
 def Snake():
-    grid = [[Snake_Init(i, j) for j in range(cols)] for i in range(rows)]
+    grid = [[Snake_Init(i, j) for j in range(BLOCK_SIZE)] for i in range(BLOCK_SIZE)]
     #print(grid)
-    for i in range(rows):
-        for j in range(cols):
+    for i in range(BLOCK_SIZE):
+        for j in range(BLOCK_SIZE):
             grid[i][j].add_neighbors(grid)
-
-    '''snake_head = [grid[round(rows/2)][round(cols/2)]]
-    food = grid[randint(0, rows-1)][randint(0, cols-1)]
-    current = snake_head[-1]'''   
     return grid
 
 #=============Sanke Movement along the path==============
+'''def is_collision(self,pt=None):
+        if(pt is None):
+            pt = self.head
+        #hit boundary
+        if(pt.x>self.w-rows or pt.x<0 or pt.y>self.h - cols or pt.y<0):
+            return True
+        if(pt in self.snake[1:]):
+            return True
+        return False'''
 
-def Snake_path(snake, grid, path_array, food, current, screen_counter):
+def Snake_path(snake, grid, path_array, food, current, screen_counter,score):
     #snake following the path========================================================
     done = False
     #clock.tick(10)
     while not done:
-        clock.tick(10)
+        clock.tick(20)
         dis.fill(black)
         direction = path_array.pop(-1)
-        if direction == 0:    # down
+        if direction == Direction.DOWN:    # down0
             snake.append(grid[current.x][current.y + 1])
-        elif direction == 1:  # right
+        elif direction == Direction.RIGHT:  # right1
             snake.append(grid[current.x + 1][current.y])
-        elif direction == 2:  # up
+        elif direction == Direction.UP:  # up2
             snake.append(grid[current.x][current.y - 1])
-        elif direction == 3:  # left
+        elif direction == Direction.LEFT:  # left3
             snake.append(grid[current.x - 1][current.y])
         current = snake[-1]
 
@@ -135,23 +158,26 @@ def Snake_path(snake, grid, path_array, food, current, screen_counter):
 
         food.show(green)
         snake[-1].show(blue)
+
+        Your_score(score)
+
         pygame.display.flip()  #display snake's movement
 
         #Storing screen frames
-        screen_name= 'Frames/screen_'+ str(screen_counter)+'.jpg'
+        '''screen_name= 'Frames/screen_'+ str(screen_counter)+'.jpg'
         pygame.image.save(pygame.display.get_surface(), screen_name)
-        screen_counter += 1
+        screen_counter += 1'''
 
         for event in pygame.event.get():
             if event.type == QUIT:
                 done = True
                 return [] #terminate, game ended
             elif event.type == KEYDOWN:
-                if event.key == K_w and not direction == 0:
-                    direction = 2
-                elif event.key == K_a and not direction == 1:
-                    direction = 3
-                elif event.key == K_s and not direction == 2:
-                    direction = 0
-                elif event.key == K_d and not direction == 3:
-                    direction = 1
+                if event.key == K_w and not direction == Direction.DOWN:
+                    direction = Direction.UP
+                elif event.key == K_a and not direction == Direction.RIGHT:
+                    direction = Direction.LEFT
+                elif event.key == K_s and not direction == Direction.UP:
+                    direction = Direction.DOWN
+                elif event.key == K_d and not direction == Direction.LEFT:
+                    direction = Direction.RIGHT

@@ -27,9 +27,9 @@ class QTrainer:
         self.gamma = gamma
         self.model = model
         self.optimer = optim.Adam(model.parameters(),lr = self.lr)    
-        self.criterion = nn.CrossEntropyLoss() #nn.MSELoss()
-        for i in self.model.parameters():
-            print(i.is_cuda)
+        self.criterion = nn.MSELoss()
+        '''for i in self.model.parameters():
+            print(i.is_cuda)'''
 
     
     def train_step(self,state,action,reward,next_state,done):

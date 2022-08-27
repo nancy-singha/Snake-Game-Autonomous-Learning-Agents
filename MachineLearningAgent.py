@@ -23,7 +23,7 @@ class Agent2:
         self.epsilon = 0  # Randomness
         self.gamma = 0.9  # discount rate
         self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
-        self.model = Linear_QNet(11, 50, 3)
+        self.model = Linear_QNet(11, 300, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         # TODO: model,trainer
 
@@ -104,9 +104,9 @@ class Agent2:
 
     def get_action(self, state):
         # random moves: tradeoff explotation / exploitation
-        self.epsilon = 80 - self.n_game
+        self.epsilon = 100 - self.n_game
         final_move = [0, 0, 0]
-        if(random.randint(0, 160) < self.epsilon):
+        if(random.randint(0, 200) < self.epsilon):
             move = random.randint(0, 2)
             final_move[move] = 1
             
@@ -128,7 +128,7 @@ def start_game():
     start_time= timeit.default_timer()
     snake_data=[]
 
-    while agent.n_game<1000:       
+    while agent.n_game<100:       
         state_old = agent.get_state(snake_head, food)
         # get move
         final_move = agent.get_action(state_old)
@@ -137,9 +137,11 @@ def start_game():
         snake_head, snake_info = play_step(snake_grid, snake_head, final_move, food, snake_info )
 
         # add food to the screen
+        if(snake_head[-1] == food and snake_info.score==0):
+            snake_info.reward = 5
         if(snake_head[-1] == food):
             snake_info.score += 1
-            snake_info.reward = 10
+            snake_info.reward += 5
             food= generate_snake_food(snake_grid, snake_head )
         
         state_new = agent.get_state(snake_head, food)

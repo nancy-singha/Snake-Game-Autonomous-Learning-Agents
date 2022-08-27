@@ -135,7 +135,7 @@ def Snake_path(snake_head, snake, action, food):
     done = False
     # clock.tick(10)
 
-    clock.tick(30)
+    clock.tick(20)
     dis.fill(black)
      # Action
      # [1,0,0] -> Straight
