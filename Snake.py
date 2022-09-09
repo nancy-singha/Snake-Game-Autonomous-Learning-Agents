@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+from importlib.resources import path
 from turtle import distance
 from pandas import concat
 import pygame 
@@ -103,7 +104,10 @@ class Snake_Init:
 def generate_snake_food(snake_grid, head):
     food = snake_grid[randint(0, BLOCK_SIZE - 1)][randint(0, BLOCK_SIZE - 1)]
     if ( food in head):   #food.obstrucle
-        generate_snake_food(snake_grid, head)
+        food= generate_snake_food(snake_grid, head)
+    if(food.x== 10 and food.y==10 and head[-1].x==10 and head[-1].y==10):
+        print('issue')
+        food= generate_snake_food(snake_grid, head)
     return food
 
 #==============START================
@@ -129,9 +133,9 @@ def Snake():
 def Snake_path(snake, grid, path_array, food, current, screen_counter,score):
     #snake following the path========================================================
     done = False
-    #clock.tick(10)
+    
     while not done:
-        clock.tick(20)
+        clock.tick(40)
         dis.fill(black)
         direction = path_array.pop(-1)
         if direction == Direction.DOWN:    # down0
@@ -146,6 +150,9 @@ def Snake_path(snake, grid, path_array, food, current, screen_counter,score):
 
         if current.x == food.x and current.y == food.y:
             return snake     #Goal achived, next food requested
+        elif len(path_array)==0:
+            done=True
+            return []
         else:
             snake.pop(0)
 
@@ -172,12 +179,3 @@ def Snake_path(snake, grid, path_array, food, current, screen_counter,score):
             if event.type == QUIT:
                 done = True
                 return [] #terminate, game ended
-            elif event.type == KEYDOWN:
-                if event.key == K_w and not direction == Direction.DOWN:
-                    direction = Direction.UP
-                elif event.key == K_a and not direction == Direction.RIGHT:
-                    direction = Direction.LEFT
-                elif event.key == K_s and not direction == Direction.UP:
-                    direction = Direction.DOWN
-                elif event.key == K_d and not direction == Direction.LEFT:
-                    direction = Direction.RIGHT

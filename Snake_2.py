@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+from math import sqrt
 from turtle import distance
 from pandas import concat
 import pygame
@@ -84,6 +85,8 @@ class Snake_info:
         self.snake_length = 0
         self.clock = pygame.time.Clock()
         self.last_eight_moves= []
+        self.distance=0
+
 # ==========================================================
 class Snake_Init:
     def __init__(self, x, y):
@@ -135,7 +138,7 @@ def Snake_path(snake_head, snake, action, food):
     done = False
     # clock.tick(10)
 
-    clock.tick(20)
+    clock.tick(40)
     dis.fill(black)
      # Action
      # [1,0,0] -> Straight
@@ -186,6 +189,7 @@ def Snake_path(snake_head, snake, action, food):
     food.show(green)
     snake_head[-1].show(blue)
     pygame.display.flip()  # display snake's movement
+
     return snake_head, True
 
     # ========================    NN DFF=====================
@@ -208,13 +212,24 @@ def play_step(snake_grid, snake_head, action, food, snakeInfo):
         # 3. Check if game Over
     reward = 0  # eat food: +10 , game over: -10 , else: 0
     game_over = False
+    distanceToFood= sqrt((new_snake_head[-1].x - food.x) ** 2 + (new_snake_head[-1].y - food.y) ** 2)
         # temp_head= new_snake_head[-1]
     if(alive== False or Snake_Init.is_collision(new_snake_head, new_snake_head,None ,True) or snake_info.frame_iteration > 100*len(snake_grid)):
             snake_info.game_over = True
             snake_info.reward = -10
             return snake_head,snake_info
+    
+    elif( distanceToFood<snake_info.distance):
+            snake_info.reward +=2
+    elif( distanceToFood>snake_info.distance):
+            snake_info.reward -=1
+    
+    snake_info.distance= distanceToFood
 
     
+    #4 Show score:
+
+    Your_score(snake_info.score)
 
     #5 check if repetative moves:
     '''snake_info.last_eight_moves.append(new_snake_head[-1].direction)

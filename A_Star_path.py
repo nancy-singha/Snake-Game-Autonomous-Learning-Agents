@@ -1,4 +1,5 @@
 from importlib.resources import path
+from operator import le
 from pandas import isnull
 import Snake as SnakeGame
 from random import randint
@@ -68,7 +69,8 @@ def start_game(screen_counter):
     current = snake_head[-1]
 
     path_array = get_path(food, snake_head) #dir_array
-
+    if len(path_array)==0:
+        print(path_array)
     food_array = [food]
     #print(path_array)
     screen_counter= screen_counter+len(path_array)
@@ -104,8 +106,10 @@ for i in range(0,500):
     score.append(results[0])
     screen_counter=results[1]
     result_data.append([i, results[0], max(score), total_time])
-    print('score for game no',i, ': ', score)
+    print('Game:', i, ' Score:', results[0], ' Survival_time:', total_time, ' Highest Score:', max(score))
 df= pd.DataFrame(result_data, columns=['game_no', 'Score', 'Highest_Score', 'Survival_time'])
-df.to_excel('AStar_results.xlsx', sheet_name='sheet1', index=False)
+
+df.to_excel('AStar_results.xlsx', sheet_name='Sheet1', index=False)
+
 
 
